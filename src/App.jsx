@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext, createContext } from "react";
 import "./App.css";
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import RelatedArtists from './components/RelatedArtists';
-import ArtistSongs from './components/ArtistSongs';
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import ArtistSongs from "./components/ArtistSongs";
+import RelatedArtists from "./components/RelatedArtists";
+import Layout from "./components/Layout";
 
 function App() {
   let [token, setToken] = useState("");
@@ -56,13 +57,19 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<RelatedArtists token={token} />} />
-        <Route path="/songs/:artistId" element={<ArtistSongs token={token} />} />
-      </Routes>
-    </Router>
+    <SpotifyContext.Provider value={{ token }}>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route path="/" element={<RelatedArtists />} />
+              <Route path="/songs/:artistId" element={<ArtistSongs />} />
+            </Route>  
+          </Routes>
+        </Router>
+    </SpotifyContext.Provider>
   );
 }
+const SpotifyContext = createContext();
 
+export const useSpotifyContext = () => useContext(SpotifyContext);
 export default App;

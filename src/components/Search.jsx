@@ -1,6 +1,45 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSpotifyContext } from "../App";
 
-function Search({ search, setSearch }) {
+function Search({ setTracks, setIsSearched }) {
+  let [search, setSearch] = useState("");
+  const { token } = useSpotifyContext();
+
+  const fetchSearchedSong = async () => {
+    setTracks([]);
+
+    let isSearchedValue = false;
+
+    if (token && search) {
+      try {
+        const response = await fetch(
+          `https://api.spotify.com/v1/search?q=${search}&type=track&offset=0`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch music data");
+        }
+        const jsonData = await response.json();
+        setTracks(jsonData.tracks.items);
+        isSearchedValue = search && jsonData.tracks.items.length > 0;
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+    setIsSearched(isSearchedValue);
+  };
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      fetchSearchedSong();
+    }, 1000);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [search]);
 
   return (
     <nav className="bg-gray-800 p-4">

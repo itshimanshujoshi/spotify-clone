@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import SearchContent from "./SearchContent";
 import { Link, useParams } from "react-router-dom";
+import { useSpotifyContext } from "../App";
 
-function ArtistSongs({ token }) {
+function ArtistSongs() {
   const { artistId } = useParams();
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { token } = useSpotifyContext();
 
   useEffect(() => {
     const fetchSongs = async () => {
@@ -54,7 +56,7 @@ function ArtistSongs({ token }) {
           Back
         </Link>
       </div>
-      <SearchContent tracks={songs}></SearchContent>
+      <SearchContent tracks={songs} />
     </>
   );
 }
